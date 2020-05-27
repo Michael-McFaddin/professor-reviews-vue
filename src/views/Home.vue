@@ -1,32 +1,45 @@
 <template>
   <div class="home">
+    <div>
+      <button v-on:click="showCreateProfessorForm = !showCreateProfessorForm">Add New Professor</button>
+      <div v-if="showCreateProfessorForm">
+        <h4>Create Professor Form</h4>
+          Name: <input type="text" v-model="newProfessorName"><br>
+          Title: <input type="text" v-model="newProfessorTitle"><br>
+          School: <input type="text" v-model="newProfessorSchool"><br>
+          Department: <input type="text" v-model="newProfessorDepartment"><br>
+        <button v-on:click="createProfessor()">Create Professor</button>
+      </div>
+    </div>
+
     <div v-for="professor in professors">
       <h1 v-model="professor.name" v-on:click="showProfessor(professor)">{{ professor.name }}</h1>
       <div v-if="professor === currentProfessor">
-        <h3>Title: <input type="text" v-model="professor.title"></h3>
-        <h3>School: <input type="text" v-model="professor.school"></h3>
-        <h3>Department: <input type="text" v-model="professor.department"></h3>
+        <h3>Title: {{professor.title}}</h3>
+        <h3>School: {{professor.school}}</h3>
+        <h3>Department: {{professor.department}}</h3>
         <br>
-        <h3>Review: <input type="text" v-model="newReviewText"></h3>
-        <h3>Rate 1 to 100: <input type="text" v-model="newRating"></h3>
-        <button v-on:click="createReview(professor)">Add Review</button>
+
+        <button v-on:click="showCreateReviewForm = !showCreateReviewForm">Add New Review</button>
+        <div v-if="showCreateReviewForm">
+          <h3>Review: <input type="text" v-model="newReviewText"></h3>
+          <h3>Rate 1 to 100: <input type="text" v-model="newRating"></h3>
+          <button v-on:click="createReview(professor)">Create Review</button>
+        </div>
+
+        <button v-on:click="showEditProfessorForm = !showEditProfessorForm">Update Professor</button>
+        <div v-if="showEditProfessorForm">
+          <h3>Title: <input type="text" v-model="professor.title"></h3>
+          <h3>School: <input type="text" v-model="professor.school"></h3>
+          <h3>Department: <input type="text" v-model="professor.department"></h3>
+          <button v-on:click="updateProfessor(professor)">Save Edits</button>
+        </div>
+
+        <button v-on:click="destroyProfessor(professor)">Delete Professor</button>
+
+
         <br><br>
-        <div>
-          <button v-on:click="showCreateProfessor = !showCreateProfessor">Create Professor</button>
-          <div v-if="showCreateProfessor">
-          <h4>Create Professor Form</h4>
-          Name: <input type="text" v-model="professor.name"><br>
-          Title: <input type="text" v-model="professor.title"><br>
-          School: <input type="text" v-model="professor.school"><br>
-          Department: <input type="text" v-model="movie.department"><br>
-          <button v-on:click="createProfessor()">Create Professor</button>
-        </div>
-        </div>
-          <button v-on:click="updateProfessor(professor)">Update Professor</button>
-        </div>
-        <div>
-          <button v-on:click="destroyProfessor(professor)">Delete Professor</button>
-        </div>
+
 
         <div class="review" v-for='review in reviews' v-if='review.professor_id === currentProfessor.id'>
           <h4>Review: {{ review.text }}</h4>
@@ -63,7 +76,14 @@ export default {
       currentProfessor: {},
       reviews: [],
       newReviewText: "",
-      newRating: ""
+      newRating: "",
+      newProfessorName: "",
+      newProfessorTitle: "",
+      newProfessorSchool: "",
+      newProfessorDepartment: "",
+      showCreateProfessorForm: false,
+      showCreateReviewForm: false,
+      showEditProfessorForm: false
     };
   },
 
@@ -86,14 +106,14 @@ export default {
   methods: {
     createProfessor: function() {
       var clientParams = {
-        name: this.name,
-        title: this.title,
-        school: this.school,
-        department: this.department
+        name: this.newProfessorName,
+        title: this.newProfessorTitle,
+        school: this.newProfessorSchool,
+        department: this.newProfessorDepartment
       };
 
       axios
-        .post("/professors/")
+        .post("/professors/", clientParams)
         .then(response => {
           console.log("Successful create!", response.data);
           this.reviews.push(response.data);
