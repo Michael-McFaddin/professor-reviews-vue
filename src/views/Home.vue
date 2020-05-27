@@ -21,14 +21,18 @@
         <div class="review" v-for='review in reviews' v-if='review.professor_id === currentProfessor.id'>
           <h4>Review: {{ review.text }}</h4>
           <h4>Rating: {{ review.rating }}</h4>
-          <h4>Edit Review <input type="text" v-model="review.text"></h4>
-          <h4>Edit Rating <input type="text" v-model="review.rating"></h4>
 
-          <div>
+          <button v-on:click="review.showEditReviewForm = !review.showEditReviewForm">Edit Review</button>
+          <div v-if="review.showEditReviewForm">
+            <h4>Edit Review <input type="text" v-model="review.text"></h4>
+            <h4>Edit Rating <input type="text" v-model="review.rating"></h4>
+
             <button v-on:click="updateReview(review)"> Update Review</button>
             <button v-on:click="destroyReview(review)">Delete Review</button>
           </div>
         </div>
+        
+
 
       </div>
     </div>
@@ -55,11 +59,19 @@ export default {
 
   created: function() {
     axios.get('/professors').then(response => {
+      response.data.forEach(professor => {
+        professor.showEditProfessorForm = false;
+      });
+      console.log(response.data);
       this.professors = response.data;
-    })
+    });
     axios.get('/reviews').then(response => {
+      response.data.forEach(review => {
+        review.showEditReviewForm = false;
+      });
+      console.log(response.data);
       this.reviews = response.data;
-    })
+    });
   },
   methods: {
     showProfessor: function(inputProfessor) {
