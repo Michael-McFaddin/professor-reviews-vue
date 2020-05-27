@@ -6,16 +6,26 @@
         <h3>Title: <input type="text" v-model="professor.title"></h3>
         <h3>School: <input type="text" v-model="professor.school"></h3>
         <h3>Department: <input type="text" v-model="professor.department"></h3>
+        <br>
+        <h3>Review: <input type="text" v-model="newReviewText"></h3>
+        <h3>Rate 1 to 100: <input type="text" v-model="newRating"></h3>
+        <button v-on:click="createReview(professor)">Add Review</button>
+        <br><br>
         <div>
           <button v-on:click="updateProfessor(professor)">Update Professor</button>
         </div>
         <div>
           <button v-on:click="destroyProfessor(professor)">Delete Professor</button>
         </div>
+
         <div class="review" v-for='review in reviews' v-if='review.professor_id === currentProfessor.id'>
           <h4>Review: {{ review.text }}</h4>
           <h4>Rating: {{ review.rating }}</h4>
+          <h4>Edit Review <input type="text" v-model="review.text"></h4>
+          <h4>Edit Rating <input type="text" v-model="review.rating"></h4>
+
           <div>
+            <button v-on:click="updateReview(review)"> Update Review</button>
             <button v-on:click="destroyReview(review)">Delete Review</button>
           </div>
         </div>
@@ -30,7 +40,7 @@
 </style>
 
 <script>
-import axios from 'axios'
+import axios from "axios"
 
 export default {
   data: function() {
@@ -38,7 +48,8 @@ export default {
       professors: [],
       currentProfessor: {},
       reviews: [],
-      test: ""
+      newReviewText: "",
+      newRating: ""
     };
   },
 
@@ -82,6 +93,38 @@ export default {
           var index = this.professors.indexOf(inputProfessor);
           this.professors.splice(index, 1);
         });
+    },
+    createReview: function(professor) {
+      var params = {
+        professor_id: professor.id,
+        text: this.newReviewText,
+        rating: this.newRating
+      };
+      axios
+        .post("/reviews/", params)
+        .then(response => {
+          console.log("Successful create!", response.data);
+          this.reviews.push(response.data);
+        })
+        .catch(error => {
+          console.log(error.response.data);
+        });
+    },
+    updateReview: function(review) {
+      var params = {
+        text: review.text,
+        rating: review.rating,
+        professor_id: review.professor_id
+      };
+      axios
+        .put(`/reviews/${review.id}`, params)
+        .then(response => {
+          console.log("Successful update!", response.data);
+        })
+        .catch(error => {
+          console.log(error.response.data.errors);
+        });
+
     },
     destroyReview: function(inputReview) {
       axios
