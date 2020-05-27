@@ -29,4 +29,12 @@
 #nav a.router-link-exact-active {
   color: #42b983;
 }
+
+.review {
+  background-color: grey;
+  color: white;
+  border-radius: 5px;
+}
+
+
 </style>
