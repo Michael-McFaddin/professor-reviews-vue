@@ -6,9 +6,13 @@
         <h3>Tile: {{ professor.title }}</h3>
         <h3>School: {{ professor.school }}</h3>
         <h3>Department: {{ professor.department }}</h3>
-        <div v-for='review in reviews' v-if='review.professor_id === currentProfessor.id'>
+        <div class="review" v-for='review in reviews' v-if='review.professor_id === currentProfessor.id'>
           <h4>Review: {{ review.text }}</h4>
           <h4>Rating: {{ review.rating }}</h4>
+          <button>Edit Review</button>
+        </div>
+        <div>
+          <button v-on:click="destroyProfessor(professor)">Delete Professor</button>
         </div>
       </div>
     </div>
@@ -47,6 +51,15 @@ export default {
         else {
           this.currentProfessor = {};
         }
+    },
+    destroyProfessor: function(inputProfessor) {
+      axios
+        .delete("/professors/" + inputProfessor.id)
+        .then(response => {
+          console.log("Successfully deleted", response.data);
+          var index = this.professors.indexOf(inputProfessor);
+          this.professors.splice(index, 1);
+        });
     }
   }
 }
