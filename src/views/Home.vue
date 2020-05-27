@@ -74,7 +74,6 @@ export default {
       });
       console.log(response.data);
       this.professors = response.data;
-      showCreateProfessor = false;
     });
     axios.get('/reviews').then(response => {
       response.data.forEach(review => {
