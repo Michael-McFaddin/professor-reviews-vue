@@ -12,6 +12,16 @@
         <button v-on:click="createReview(professor)">Add Review</button>
         <br><br>
         <div>
+          <button v-on:click="showCreateProfessor = !showCreateProfessor">Create Professor</button>
+          <div v-if="showCreateProfessor">
+          <h4>Create Professor Form</h4>
+          Name: <input type="text" v-model="professor.name"><br>
+          Title: <input type="text" v-model="professor.title"><br>
+          School: <input type="text" v-model="professor.school"><br>
+          Department: <input type="text" v-model="movie.department"><br>
+          <button v-on:click="createProfessor()">Create Professor</button>
+        </div>
+        </div>
           <button v-on:click="updateProfessor(professor)">Update Professor</button>
         </div>
         <div>
@@ -74,6 +84,24 @@ export default {
     });
   },
   methods: {
+    createProfessor: function() {
+      var clientParams = {
+        name: this.name,
+        title: this.title,
+        school: this.school,
+        department: this.department
+      };
+
+      axios
+        .post("/professors/")
+        .then(response => {
+          console.log("Successful create!", response.data);
+          this.reviews.push(response.data);
+        })
+        .catch(error => {
+          console.log(error.response.data);
+        });
+      },
     showProfessor: function(inputProfessor) {
       if(this.currentProfessor !== inputProfessor) {
         this.currentProfessor = inputProfessor}
