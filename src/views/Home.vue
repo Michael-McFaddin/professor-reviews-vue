@@ -27,8 +27,8 @@
           <button v-on:click="createReview(professor)">Create Review</button>
         </div>
 
-        <button v-on:click="showEditProfessorForm = !showEditProfessorForm">Update Professor</button>
-        <div v-if="showEditProfessorForm">
+        <button v-on:click="professor.showEditProfessorForm = !professor.showEditProfessorForm">Update Professor</button>
+        <div v-if="professor.showEditProfessorForm">
           <h3>Title: <input type="text" v-model="professor.title"></h3>
           <h3>School: <input type="text" v-model="professor.school"></h3>
           <h3>Department: <input type="text" v-model="professor.department"></h3>
@@ -41,7 +41,7 @@
         <br><br>
 
 
-        <div class="review" v-for='review in reviews' v-if='review.professor_id === currentProfessor.id'>
+        <div class="review" v-for='review in professor.reviews'>
           <h4>Review: {{ review.text }}</h4>
           <h4>Rating: {{ review.rating }}</h4>
 
@@ -74,7 +74,6 @@ export default {
     return {
       professors: [],
       currentProfessor: {},
-      reviews: [],
       newReviewText: "",
       newRating: "",
       newProfessorName: "",
@@ -82,8 +81,7 @@ export default {
       newProfessorSchool: "",
       newProfessorDepartment: "",
       showCreateProfessorForm: false,
-      showCreateReviewForm: false,
-      showEditProfessorForm: false
+      showCreateReviewForm: false
     };
   },
 
@@ -91,17 +89,21 @@ export default {
     axios.get('/professors').then(response => {
       response.data.forEach(professor => {
         professor.showEditProfessorForm = false;
+        professor.reviews.map(review => {
+          review.showEditReviewForm = false;
+          return review;
+        })
       });
       console.log(response.data);
       this.professors = response.data;
     });
-    axios.get('/reviews').then(response => {
-      response.data.forEach(review => {
-        review.showEditReviewForm = false;
-      });
-      console.log(response.data);
-      this.reviews = response.data;
-    });
+    // axios.get('/reviews').then(response => {
+    //   response.data.forEach(review => {
+    //     review.showEditReviewForm = false;
+    //   });
+    //   console.log(response.data);
+    //   this.reviews = response.data;
+    // });
   },
   methods: {
     createProfessor: function() {
